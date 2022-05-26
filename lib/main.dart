@@ -1,9 +1,19 @@
-import 'package:dio/dio.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  HttpOverrides.global = MyHttpOverrides();
+  runApp(const MyApp());
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 class MyApp extends StatelessWidget {
   // ignore: use_key_in_widget_constructors
@@ -36,7 +46,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _controller = TextEditingController();
   final _channel = IOWebSocketChannel.connect(
-    Uri.parse("wss://beta.annelersatiyor.com/api/message/auth/ws"),
+    Uri.parse("ws://beta.annelersatiyor.com/api/message/auth/ws"),
     headers: {
       "userid": "22",
       "Authorization":
